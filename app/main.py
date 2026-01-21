@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import Any
 from app.customer import Customer
 from app.shop import Shop
+import datetime
 
 
 def shop_trip() -> Any:
@@ -23,7 +24,7 @@ def shop_trip() -> Any:
     for customer in customers:
         print(f"{customer.name} has {customer.money} dollars")
 
-        arr_choose_arr = []
+        shop_trip_costs = []
 
         for shop in shops:
             fuel_cost = customer.get_fuel_price(
@@ -34,16 +35,19 @@ def shop_trip() -> Any:
                           (customer_cart=customer.product_cart))
             full_price = (Decimal(fuel_cost + shop_price)
                           .quantize(Decimal("0.01")))
-            arr_choose_arr.append((full_price, shop))
+            shop_trip_costs.append((full_price, shop))
 
             print(f"{customer.name}'s trip to "
                   f"the {shop.name} costs {full_price}")
 
-        min_price, best_shop = min(arr_choose_arr, key=lambda x: x[0])
+        min_price, best_shop = min(shop_trip_costs, key=lambda x: x[0])
 
         if min_price <= customer.money:
             print(f"{customer.name} rides to {best_shop.name}\n")
-            print("Date: 04/01/2021 12:33:41")
+            customer.location = best_shop.location
+            print(f"""Date: {datetime.datetime.now()
+                  .strftime("%d/%m/%Y %H:%M:%S")}"""
+                  )
             print(f"Thanks, {customer.name}, for your purchase!")
             best_shop.bough_info(customer_cart=customer.product_cart)
             print(f"{customer.name} rides home")
